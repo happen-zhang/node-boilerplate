@@ -13,3 +13,5 @@ Node.js Web开发基础框架模板。
 * mocha：测试框架；
 
 * gulp：自动任务构建工具；
+
+* lodash：js扩展；

@@ -2,19 +2,18 @@
  * index.js
  */
 
-
- /**
-  *  修改变量定义风格
-  *  ghost怎么样处理route的，因为./routes/index暴露出来的是一个对象
-  *  做成一个可以跑起来的boilerplate
-  */
-
 var http = require('http');
+var crypto = require('crypto');
 var express = require('express');
 var hbs = require('express-hbs');
 
-// 路由模块
+// helpers
+var helpers = require('./helpers');
+// routes
 var routes = require('./routes');
+
+// json
+var packageInfo = require('./package.json');
 
 // express
 var app = express();
@@ -65,10 +64,15 @@ app.set('views', viewsDir);
  * helper
  */
 
-// app.locals.moment= require('moment');
+var assetHash = (crypto.createHash('md5')
+                       .update(packageInfo.version + Date.now())
+                       .digest('hex'))
+                       .substring(0, 10);
+helpers.loadCoreHelpers(null, assetHash);
 
 // 路由
 routes.frontend(app);
+routes.admin(app);
 
 // 开发环境
 if ('development' == app.get('env')) {
