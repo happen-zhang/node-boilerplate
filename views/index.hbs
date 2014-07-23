@@ -1,0 +1,15 @@
+{{!< default}}
+
+{{#contentFor 'stylesheets'}}
+<link rel="stylesheet" href="/stylesheets/main.css" />
+{{/contentFor}}
+
+<h1>Body Here - {{title}}</h1>
+
+{{#contentFor 'javascripts'}}
+<script src="/javascripts/main.js"></script>
+{{/contentFor}}
+
+{{#if prod_mode}}
+{{> 'google-analytics'}}
+{{/if}}
