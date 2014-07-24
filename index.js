@@ -73,8 +73,6 @@ helpers.loadCoreHelpers(null, assetHash);
 routes.frontend(app);
 routes.admin(app);
 
-console.log(process.env.NODE_ENV);
-
 // development env
 if ('development' == app.get('env')) {
     app.use(express.errorHandler({
