@@ -6,15 +6,17 @@
 
 var _ = require('lodash');
 var hbs = require('express-hbs');
-var assetTemplate = _.template('<%= source %>?v=<%= version %>');
 
+var config = require('../config');
+
+var assetTemplate = _.template('<%= source %>?v=<%= version %>');
 var coreHelpers = {};
 
 /**
  * {{asset "images/hi.png"}}
  */
 coreHelpers.asset = function (context, options) {
-    var output = '/';
+    var output = config().paths.subdir;
 
     // Get rid of any leading slash on the context
     context = context.replace(/^\//, '');

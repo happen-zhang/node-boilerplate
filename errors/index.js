@@ -42,9 +42,9 @@ errors = {
             err = 'An unknown error occurred.';
         }
 
-        if ((process.env.NODE_ENV === 'development' ||
-            process.env.NODE_ENV === 'staging' ||
-            process.env.NODE_ENV === 'production')) {
+        if ((process.env.NODE_ENV === 'development'
+             || process.env.NODE_ENV === 'staging'
+             || process.env.NODE_ENV === 'production')) {
 
             msgs = ['\nERROR:'.red, err.red, '\n'];
 

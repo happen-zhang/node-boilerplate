@@ -4,6 +4,8 @@
  */
 
 var errors = require('../errors');
+var config = require('../config');
+
 var frontendControllers;
 
 frontendControllers = {
@@ -14,6 +16,11 @@ frontendControllers = {
 
     geterror: function(req, res, next) {
         errors.error404(req, res, next);
+    },
+
+    getconfig: function(req, res, next) {
+        console.log(config());
+        res.jsonp({ name: 'happen' });
     }
 
 };
