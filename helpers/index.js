@@ -16,7 +16,7 @@ var coreHelpers = {};
  * {{asset "images/hi.png"}}
  */
 coreHelpers.asset = function (context, options) {
-    var output = config().paths.subdir;
+    var output = config().paths.subdir + '/';
 
     // Get rid of any leading slash on the context
     context = context.replace(/^\//, '');

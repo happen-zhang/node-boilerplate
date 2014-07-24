@@ -5,7 +5,7 @@ var config;
 
 config = {
     development: {
-        url: 'http://my-blog.com/ghost',
+        url: 'http://my-blog.com',
 
         database: {
             client: 'mysql',
