@@ -2,6 +2,9 @@
  * index.js
  */
 
+// set application env
+process.env.NODE_ENV = process.env.NODE_ENV || 'development';
+
 var crypto = require('crypto');
 var express = require('express');
 var hbs = require('express-hbs');
@@ -21,10 +24,6 @@ var packageInfo = require('./package.json');
 
 // express
 var app = express();
-
-// set application env
-process.env.NODE_ENV = process.env.NODE_ENV || 'development';
-app.set('env', process.env.NODE_ENV);
 
 var appConfig = config();
 
@@ -49,6 +48,12 @@ app.use(express.session({
 }));
 // logger
 app.use(express.logger());
+
+/**
+ * env
+ */
+
+app.set('env', process.env.NODE_ENV);
 
 /**
  * views

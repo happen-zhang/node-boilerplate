@@ -3,6 +3,11 @@
  * All models here.
  */
 
-module.exports = {
+var models = null;
 
+models = {
+    Base: require('./base'),
+    Post: require('./post')
 };
+
+module.exports = models;
