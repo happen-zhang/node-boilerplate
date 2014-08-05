@@ -23,7 +23,8 @@
         "lodash": "2.4.1",
         "bcryptjs": "0.7.10",
         "knex": "0.6.21",
-        "mysql": "2.1.1"
+        "mysql": "2.1.1",
+        "log4js": "0.6.16"
     },
 
     "devDependencies": {

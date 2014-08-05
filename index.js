@@ -5,6 +5,7 @@
 var crypto = require('crypto');
 var express = require('express');
 var hbs = require('express-hbs');
+var log4js = require('log4js');
 
 // config
 var config = require('./config');
@@ -95,6 +96,18 @@ if ('production' == app.get('env')) {
 
     // view cache
     app.set('view cache', true);
+
+    // logger support
+    log4js.configure({
+        appenders: [{
+            type: 'console'
+        }]
+    });
+    logger = log4js.getLogger('normal');
+    logger.setLevel('INFO');
+    app.use(log4js.connectLogger(logger, {
+        level: log4js.levels.INFO
+    }));
 }
 
 // bootstrap server
