@@ -1,35 +1,30 @@
 
-
 var _ = require('lodash');
-var validator = require('validator');
-var when      = require('when');
+var when = require('when');
 
-var errors    = require('../../errors');
-var schema    = require('../schema').tables;
+var validator = require('./validator');
+var schema = require('../schema').tables;
+var errors = require('../../errors');
 
 var validateSchema = null;
 var validate = null;
 
-validator.extend('empty', function (str) {
-    return _.isEmpty(str);
-});
-
-validator.extend('notContains', function (str, badString) {
-    return !_.contains(str, badString);
-});
-
-validator.extend('isEmptyOrURL', function (str) {
-    return (_.isEmpty(str) || validator.isURL(str, { protocols: ['http', 'https'], require_protocol: true }));
-});
-
+/**
+ * 模型属性值验证
+ * @param  {String}  tableName 数据表名称
+ * @param  {String}  model     模型JSON数据
+ * @return {Promise}
+ */
 validateSchema = function(tableName, model) {
     var columns = _.keys(schema[tableName]);
     var validationErrors = [];
+    var on = model.hasOwnProperty('id') ? 'update' : 'add';
 
+    // 数据表字段名
     _.each(columns, function (columnKey) {
         var message = '';
 
-        // check nullable
+        // 检查字段是否可以为空
         if (model.hasOwnProperty(columnKey) && schema[tableName][columnKey].hasOwnProperty('nullable')
                 && schema[tableName][columnKey].nullable !== true) {
             if (validator.isNull(model[columnKey]) || validator.empty(model[columnKey])) {
@@ -38,9 +33,9 @@ validateSchema = function(tableName, model) {
             }
         }
 
-        // TODO: check if mandatory values should be enforced
+        // 对非空属性值的检验
         if (model[columnKey] !== null && model[columnKey] !== undefined) {
-            // check length
+            // 检查长度是否合法
             if (schema[tableName][columnKey].hasOwnProperty('maxlength')) {
                 if (!validator.isLength(model[columnKey], 0, schema[tableName][columnKey].maxlength)) {
                     message = 'Value in [' + tableName + '.' + columnKey + '] exceeds maximum length of '
@@ -49,12 +44,12 @@ validateSchema = function(tableName, model) {
                 }
             }
 
-            //check validations objects
+            // 检查validatations对象
             if (schema[tableName][columnKey].hasOwnProperty('validations')) {
-                validationErrors = validationErrors.concat(validate(model[columnKey], columnKey, schema[tableName][columnKey].validations));
+                validationErrors = validationErrors.concat(validate(model[columnKey], columnKey, schema[tableName][columnKey].validations, on));
             }
 
-            //check type
+            // 检查是否为整数
             if (schema[tableName][columnKey].hasOwnProperty('type')) {
                 if (schema[tableName][columnKey].type === 'integer' && !validator.isInt(model[columnKey])) {
                     message = 'Value in [' + tableName + '.' + columnKey + '] is not an integer.';
@@ -71,27 +66,39 @@ validateSchema = function(tableName, model) {
     return when.resolve();
 };
 
-validate = function (value, key, validations) {
+/**
+ * 字段验证器
+ * @param  {String} value       需要被验证属性的value
+ * @param  {String} key         需要被验证属性的key
+ * @param  {String} on          属性被验证的时机
+ * @param  {String} validations 验证器名称
+ * @return {Array}              ValidationError的数组
+ */
+validate = function (value, key, validations, on) {
     var validationErrors = [];
 
-    _.each(validations, function (validationOptions, validationName) {
-        var goodResult = true;
+    _.each(validations, function (opts, validationName) {
+        // 是否在合适的验证时机
+        if (!opts.hasOwnProperty('validateOn') || (opts.hasOwnProperty('validateOn') && opts.validateOn.toLowerCase() === on)) {
+            var expect = true;
+            var errorInfo = opts.errorInfo || 'Validation (' + validationName + ') failed for ' + key;
 
-        if (_.isBoolean(validationOptions)) {
-            goodResult = validationOptions;
-            validationOptions = [];
-        } else if (!_.isArray(validationOptions)) {
-            validationOptions = [validationOptions];
+            if (_.isBoolean(opts.condition)) {
+                expect = opts.condition;
+                opts.condition = [];
+            } else if (!_.isArray(opts.condition)) {
+                opts.condition = [opts.condition];
+            }
+
+            opts.condition.unshift(value);
+
+            // 调用validator.xxxx进行验证
+            if (validator[validationName].apply(validator, opts.condition) !== expect) {
+                validationErrors.push(new errors.ValidationError(errorInfo, key));
+            }
+
+            opts.condition.shift();
         }
-
-        validationOptions.unshift(value);
-
-        // equivalent of validator.isSomething(option1, option2)
-        if (validator[validationName].apply(validator, validationOptions) !== goodResult) {
-            validationErrors.push(new errors.ValidationError('Validation (' + validationName + ') failed for ' + key, key));
-        }
-
-        validationOptions.shift();
     }, this);
 
     return validationErrors;

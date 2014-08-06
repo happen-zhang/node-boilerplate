@@ -7,7 +7,9 @@ var _ = require('lodash');
 var when = require('when');
 var hbs = require('express-hbs');
 var colors = require('colors');
+
 var NotFoundError = require('./notfounderror');
+var ValidationError = require('./validationerror');
 
 // error页面
 var errorTplPath = 'error';
@@ -177,3 +179,4 @@ errors = {
 
 module.exports = errors;
 module.exports.NotFoundError = NotFoundError;
+module.exports.ValidationError = ValidationError;
