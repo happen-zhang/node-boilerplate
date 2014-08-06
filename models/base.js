@@ -70,42 +70,18 @@ baseBookshelf.Model = baseBookshelf.Model.extend({
         console.log('saving...');
     },
 
-    // 格式化时间日期
-    fixDates: function (attrs) {
-        var self = this;
-
-        _.each(attrs, function (value, key) {
-            if (value !== null && schema.tables[self.tableName][key].type === 'dateTime') {
-                attrs[key] = moment(value).toDate();
-            }
-        });
-
-        return attrs;
-    },
-
-    // 格式化整数和布尔型
-    fixBools: function (attrs) {
-        var self = this;
-        _.each(attrs, function (value, key) {
-            if (schema.tables[self.tableName][key].type === 'bool') {
-                attrs[key] = value ? true : false;
-            }
-        });
-
-        return attrs;
-    },
-
     // 保存到数据库之前格式化数据
     format: function (attrs) {
         console.log('format...');
-        // 格式化日期
-        return this.fixDates(attrs);
+
+        return attrs;
     },
 
     // 从数据库中取出数据时，对数据进行格式化
     parse: function (attrs) {
         console.log('parse...');
-        return this.fixBools(this.fixDates(attrs));
+
+        return attrs;
     },
 
     // 对象转为json数据
