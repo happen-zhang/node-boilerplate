@@ -22,11 +22,12 @@ validateSchema = function(tableName, model) {
 
     // 数据表字段名
     _.each(columns, function (columnKey) {
+        var field = schema[tableName][columnKey];
         var message = '';
 
         // 检查字段是否可以为空
-        if (model.hasOwnProperty(columnKey) && schema[tableName][columnKey].hasOwnProperty('nullable')
-                && schema[tableName][columnKey].nullable !== true) {
+        if (model.hasOwnProperty(columnKey) && field.hasOwnProperty('nullable')
+                && field.nullable !== true) {
             if (validator.isNull(model[columnKey]) || validator.empty(model[columnKey])) {
                 message = 'Value in [' + tableName + '.' + columnKey + '] cannot be blank.';
                 validationErrors.push(new errors.ValidationError(message, tableName + '.' + columnKey));
@@ -36,22 +37,22 @@ validateSchema = function(tableName, model) {
         // 对非空属性值的检验
         if (model[columnKey] !== null && model[columnKey] !== undefined) {
             // 检查长度是否合法
-            if (schema[tableName][columnKey].hasOwnProperty('maxlength')) {
-                if (!validator.isLength(model[columnKey], 0, schema[tableName][columnKey].maxlength)) {
+            if (field.hasOwnProperty('maxlength')) {
+                if (!validator.isLength(model[columnKey], 0, field.maxlength)) {
                     message = 'Value in [' + tableName + '.' + columnKey + '] exceeds maximum length of '
-                        + schema[tableName][columnKey].maxlength + ' characters.';
+                        + field.maxlength + ' characters.';
                     validationErrors.push(new errors.ValidationError(message, tableName + '.' + columnKey));
                 }
             }
 
             // 检查validatations对象
-            if (schema[tableName][columnKey].hasOwnProperty('validations')) {
-                validationErrors = validationErrors.concat(validate(model[columnKey], columnKey, schema[tableName][columnKey].validations, on));
+            if (field.hasOwnProperty('validations')) {
+                validationErrors = validationErrors.concat(validate(model[columnKey], columnKey, field.validations, on));
             }
 
             // 检查是否为整数
-            if (schema[tableName][columnKey].hasOwnProperty('type')) {
-                if (schema[tableName][columnKey].type === 'integer' && !validator.isInt(model[columnKey])) {
+            if (field.hasOwnProperty('type')) {
+                if (field.type === 'integer' && !validator.isInt(model[columnKey])) {
                     message = 'Value in [' + tableName + '.' + columnKey + '] is not an integer.';
                     validationErrors.push(new errors.ValidationError(message, tableName + '.' + columnKey));
                 }
@@ -80,24 +81,22 @@ validate = function (value, key, validations, on) {
     _.each(validations, function (opts, validationName) {
         // 是否在合适的验证时机
         if (!opts.hasOwnProperty('validateOn') || (opts.hasOwnProperty('validateOn') && opts.validateOn.toLowerCase() === on)) {
+            var args = [];
             var expect = true;
             var errorInfo = opts.errorInfo || 'Validation (' + validationName + ') failed for ' + key;
 
             if (_.isBoolean(opts.condition)) {
                 expect = opts.condition;
-                opts.condition = [];
-            } else if (!_.isArray(opts.condition)) {
-                opts.condition = [opts.condition];
+            } else {
+                args.push(opts.condition);
             }
 
-            opts.condition.unshift(value);
+            args.unshift(value);
 
             // 调用validator.xxxx进行验证
-            if (validator[validationName].apply(validator, opts.condition) !== expect) {
+            if (validator[validationName].apply(validator, args) !== expect) {
                 validationErrors.push(new errors.ValidationError(errorInfo, key));
             }
-
-            opts.condition.shift();
         }
     }, this);
 
