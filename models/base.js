@@ -11,6 +11,7 @@ var when = require('when');
 
 var schema = require('../data/schema');
 var validation = require('../data/validation');
+var autocompletion = require('../data/autocompletion');
 var config = require('../config');
 
 // 实例化一个bookshelf对象
@@ -19,7 +20,7 @@ baseBookshelf.plugin('registry');
 
 baseBookshelf.Model = baseBookshelf.Model.extend({
     // 时间戳为true时，则数据表中需要有created_at和updated_at字段
-    hasTimestamps: true,
+    // hasTimestamps: true,
 
     // 数据表中的字段
     permittedAttributes: function() {
@@ -55,6 +56,10 @@ baseBookshelf.Model = baseBookshelf.Model.extend({
         return validation.validateSchema(this.tableName, this.toJSON());
     },
 
+    autocomplete: function(attrs) {
+        return autocompletion.autocomplete(this.tableName, attrs);
+    },
+
     // 创建数据时触发
     creating: function(newObj, attr, options) {
         console.log('creating...');
@@ -62,17 +67,25 @@ baseBookshelf.Model = baseBookshelf.Model.extend({
 
     // 保存数据时触发
     saving: function (newObj, attr, options) {
+        console.log('saving...');
+
         // 移除所有不属于该模型中的属性
         this.attributes = this.pick(this.permittedAttributes());
         // 保存更新之前的属性
         this._updatedAttributes = newObj.previousAttributes();
-
-        console.log('saving...');
+        this._isSave = true;
     },
 
     // 保存到数据库之前格式化数据
     format: function (attrs) {
         console.log('format...');
+
+        var isSve = this._isSave || false;
+        this._isSave = false;
+
+        if (isSve) {
+            return this.autocomplete(attrs);
+        }
 
         return attrs;
     },
@@ -86,8 +99,8 @@ baseBookshelf.Model = baseBookshelf.Model.extend({
 
     // 对象转为json数据
     toJSON: function (options) {
-        var attrs = _.extend({}, this.attributes),
-            self = this;
+        var attrs = _.extend({}, this.attributes);
+        var self = this;
         options = options || {};
 
         if (options && options.shallow) {
@@ -209,6 +222,8 @@ baseBookshelf.Model = baseBookshelf.Model.extend({
             if (object) {
                 return object.save(data, options);
             }
+
+            return when.reject(null);
         });
     },
 

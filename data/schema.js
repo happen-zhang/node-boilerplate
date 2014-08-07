@@ -12,33 +12,30 @@ var db = {
             maxlength: 36,
             nullable: false,
             validations: {
-                'empty': {
-                    condition: false,
-                    errorInfo: 'UUID not be empty'
-                },
                 'isUUID': {
                     condition: true,
-                    errorInfo: 'UUID is invalid!'
+                    errorInfo: 'UUID is invalid.'
                 }
             }
         },
         title: {
             type: 'string',
             maxlength: 255,
-            nullable: true,
+            nullable: false,
             validations: {
                 'empty': {
                     condition: false,
-                    errorInfo: 'title不能为空',
-                    validateOn: 'add'
+                    errorInfo: 'Title must not be empty.',
+                }
+            },
+            autocompletions: {
+                'timestamp': {
+                    autocompleteOn: 'add'
+                },
+                'concat': {
+                    arguments: 'easy'
                 }
             }
-        },
-        slug: {
-            type: 'string',
-            maxlength: 150,
-            nullable: false,
-            unique: true
         },
         content: {
             type: 'text',
@@ -46,50 +43,25 @@ var db = {
             fieldtype: 'medium',
             nullable: true
         },
-        image: {
-            type: 'text',
-            maxlength: 2000,
-            nullable: true
-        },
-        featured: {
-            type: 'bool',
-            nullable: false,
-            defaultTo: false,
-            validations: {
-                'isIn': {
-                    condition: [[0, 1, false, true]],
-                    errorInfo: 'Featured is invalid!'
-                }
-            }
-        },
-        page: {
-            type: 'bool',
-            nullable: false,
-            defaultTo: false,
-            validations: {
-                'isIn': {
-                    condition: [[0, 1, false, true]],
-                    errorInfo: 'page is invalid!'
-                }
-            }
-        },
-        status: {
-            type: 'string',
-            maxlength: 150,
-            nullable: false,
-            defaultTo: 'draft'
-        },
         author_id: {
             type: 'integer',
             nullable: false
         },
         created_at: {
             type: 'dateTime',
-            nullable: false
+            nullable: false,
+            autocompletions: {
+                'timestamp': {
+                    autocompleteOn: 'add'
+                }
+            }
         },
         updated_at: {
             type: 'dateTime',
-            nullable: true
+            nullable: true,
+            autocompletions: {
+                'timestamp': { }
+            }
         }
     }
 };
