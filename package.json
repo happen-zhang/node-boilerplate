@@ -9,12 +9,10 @@
         "start": "node index",
         "test": "mocha"
     },
-
     "engines": {
         "node": "0.10.x",
         "npm":  "1.2.x"
     },
-
     "dependencies": {
         "express": "3.4.6",
         "express-hbs": "0.7.9",
@@ -28,7 +26,9 @@
         "log4js": "0.6.16",
         "validator": "3.16.1",
         "node-uuid": "1.4.1",
-        "moment": "2.8.1"
+        "moment": "2.8.1",
+        "minimist": "0.2.0",
+        "inquirer": "0.6.0"
     },
 
     "devDependencies": {

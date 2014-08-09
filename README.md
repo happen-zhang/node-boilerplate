@@ -32,13 +32,37 @@ NODE_ENV=development node index.js
 NODE_ENV=production node index.js
 ```
 
+## 数据库操作 ##
+
+我们可以通过cli来对数据库进行操作，包括「初始化数据库」，「删除数据库」，「重置数据库」。
+
+### 初始化数据库 ###
+
+我们可以在`/data/schema.js`中配置数据表中的字段属性，在`/data/fixtures/fixtures.json`中添加预留数据，然后运行下面的命令就可以初始化数据库了。
+
+```
+node database.js --install
+```
+
+### 删除数据库 ###
+
+```
+node database.js --uninstall
+```
+
+### 重置数据库 ###
+
+```
+node database.js --reset
+```
+
 ## ORM操作 ##
 
 我们的模板使用的ORM是基于[bookshelf](http://bookshelfjs.org/)。ORM系统的核心文件为`/models/base.js`，它封装了最基本的ORM操作（CURD），还设置了模型对象在数据库存取过程中的hook（creating、saving和saved等），方便我们做一些数据验证操作。同时，它内部还保存了几个与数据安全相关的方法，如`permittedAttributes`，保证我们的数据库操作的正确性。接下来我们来看看如何配置一个简单易用强大的ORM系统吧。
 
 ### 1. 配置schema ###
 
-每个模型都需要配置一个对应的`schema`，它需要和数据库表的字段名称相同，至于类型和其他属性可以不同。`schema`用于检验模型的字段值是否正确和创建数据表。我们可以在`/data/schema.js`文件下配置我们模型对应的`schema`。下面来配置一个简单的`schema`：
+每个模型都需要配置一个对应的`schema`，它需要和数据库表的字段名称相同，因为系统需要依赖`schema`来创建数据表。`schema`用于检验模型的字段值是否正确和创建数据表。我们可以在`/data/schema.js`文件下配置我们模型对应的`schema`。下面来配置一个简单的`schema`：
 
 ```Javascript
 // /data/schema.js
@@ -105,15 +129,15 @@ module.exports.tables = db;
 在schema属性中可以进行配置的键值：
 
 ```
-type: 字段的类型，可取值有`integer`，`string`，`double`，`bool`，`text`和`dateTime`；
+type: 字段的类型，可取值有`increments`，`string`，`text`， `integer`， `bigInteger`， `float`， `decimal`， `boolean`， `date`， `dateTime`， `time`， `timestamp`， `binary`， `enum / enu`， `json`， `uuid`。关于各种类型的含义，可见[knex](http://knexjs.org/#Schema-increments)；
+
+maxlength：`string`的最大长度，默认为255；
+
+fieldtype：当type为`text`时，该属性才会生效。有`mediumtext`，`longtext`，默认为`text`；
 
 unsigned：无符整型；
 
 primary：true或者false，主键；
-
-maxlength：字符的最大长度；
-
-fieldtype：域类型，如`medium`；
 
 nullable：true或者false，当为false时，保存到数据库时，会检验该字段对应的值是否为空；
 
@@ -279,7 +303,7 @@ module.exports = autocompleter;
 
 * [x] 补全关于model validator的文档
 
-* [ ] schema生成数据表，提供cli
+* [x] schema生成数据表，提供cli
 
 * [ ] 做成lib，简化操作
 
