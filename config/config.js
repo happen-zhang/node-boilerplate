@@ -14,7 +14,7 @@ config = {
                 user     : 'root',
                 password : '',
                 database : 'dbname',
-                charset  : 'UTF8_GENERAL_CI'
+                charset  : 'utf8'
             }
         },
 

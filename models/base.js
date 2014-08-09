@@ -4,7 +4,6 @@
  */
 
 var bookshelf = require('bookshelf');
-var uuid = require('node-uuid');
 var moment = require('moment');
 var _ = require('lodash');
 var when = require('when');
@@ -19,19 +18,9 @@ var baseBookshelf = bookshelf(config().database.knex);
 baseBookshelf.plugin('registry');
 
 baseBookshelf.Model = baseBookshelf.Model.extend({
-    // 时间戳为true时，则数据表中需要有created_at和updated_at字段
-    // hasTimestamps: true,
-
     // 数据表中的字段
     permittedAttributes: function() {
         return _.keys(schema.tables[this.tableName]);
-    },
-
-    // 默认字段值
-    defaults: function() {
-        return {
-            uuid: uuid.v4()
-        };
     },
 
     // 对象初始化
