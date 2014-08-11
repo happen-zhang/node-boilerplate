@@ -1,0 +1,6 @@
+{
+    "post": [
+        "INSERT INTO `post` (`id`, `uuid`, `title`, `content`, `author_id`, `created_at`, `updated_at`) VALUES(1, '467c8b14-1f6b-11e4-8780-a6a859c2c287', 'Hello 1', 'Hello 1', 1, 0, 0),(2, '467c8b14-1f6b-11e4-8780-a6a859c2c227', 'Hello 2', 'Hello 2', 1, 0, 0),(3, '467c8b14-1f6b-11e4-8vb0-a6a859c2c227', 'Hello 3', 'Hello 3', 1, 0, 0);",
+        "INSERT INTO `post` (`id`, `uuid`, `title`, `content`, `author_id`, `status`, `created_at`, `updated_at`) VALUES(4, '46fghb14-1f6b-11e4-8780-a6a859c2c287', 'Hello 4', 'Hello 4', 1, 1, 0, 0);"
+    ]
+}
